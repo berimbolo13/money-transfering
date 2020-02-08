@@ -12,4 +12,6 @@ public interface AccountRepository {
   Account create(Account account);
 
   Account delete(Long id);
+
+  void transferMoney(Long from, Long to, int amount);
 }

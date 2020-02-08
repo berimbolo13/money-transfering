@@ -2,6 +2,7 @@ package org.shulikov.transfer.repository.impl;
 
 import static java.util.Optional.ofNullable;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.Map;
 import java.util.Optional;
@@ -9,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import org.shulikov.transfer.model.Account;
 import org.shulikov.transfer.repository.api.AccountRepository;
+import org.shulikov.transfer.validator.api.AccountValidator;
 
 @Singleton
 public class AccountRepositoryImpl implements AccountRepository {
@@ -20,6 +22,13 @@ public class AccountRepositoryImpl implements AccountRepository {
   }};
 
   private AtomicLong lastId = new AtomicLong(accounts.size());
+
+  private AccountValidator accountValidator;
+
+  @Inject
+  public AccountRepositoryImpl(AccountValidator accountValidator) {
+    this.accountValidator = accountValidator;
+  }
 
   public Optional<Account> findById(Long id) {
     return ofNullable(accounts.get(id));
@@ -37,5 +46,22 @@ public class AccountRepositoryImpl implements AccountRepository {
 
   public Account delete(Long id) {
     return accounts.remove(id);
+  }
+
+  public void transferMoney(Long fromId, Long toId, int amount) {
+    accounts.compute(fromId, (key, value) -> {
+      accountValidator.validateForWithdraw(key, value, amount);
+      depositMoney(toId, amount);
+      value.setBalance(value.getBalance() - amount);
+      return value;
+    });
+  }
+
+  private void depositMoney(Long toId, int amount) {
+    accounts.compute(toId, (key, value) -> {
+      accountValidator.validateForDeposit(key, value);
+      value.setBalance(value.getBalance() + amount);
+      return value;
+    });
   }
 }
