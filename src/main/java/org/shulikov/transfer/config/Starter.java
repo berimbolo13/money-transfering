@@ -1,5 +1,7 @@
 package org.shulikov.transfer.config;
 
+import static org.shulikov.transfer.config.OpenApiConfig.getConfiguredOpenApiPlugin;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import io.javalin.Javalin;
@@ -20,7 +22,9 @@ public class Starter {
   }
 
   public void boot() {
-    Javalin app = Javalin.create().start(SERVICE_PORT);
+    Javalin app = Javalin
+        .create(config -> config.registerPlugin(getConfiguredOpenApiPlugin()))
+        .start(SERVICE_PORT);
     router.bindRoutes(app);
     exceptionHandler.bindExceptions(app);
   }
