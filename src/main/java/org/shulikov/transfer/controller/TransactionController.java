@@ -41,6 +41,12 @@ public class TransactionController {
               status = "400",
               description = "Not enough money on the balance FROM"),
           @OpenApiResponse(
+              status = "400",
+              description = "Duplicate accounts FROM and TO"),
+          @OpenApiResponse(
+              status = "400",
+              description = "Amount in transaction less then one"),
+          @OpenApiResponse(
               status = "404",
               description = "Account not found")
       }

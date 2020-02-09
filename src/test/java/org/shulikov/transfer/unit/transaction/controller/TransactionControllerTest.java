@@ -1,4 +1,4 @@
-package org.shulikov.transfer.unit.transaction;
+package org.shulikov.transfer.unit.transaction.controller;
 
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.mockito.Mockito.doThrow;
@@ -33,6 +33,26 @@ public class TransactionControllerTest extends TransactionControllerTestBase {
     Transaction transaction = createTransaction();
     when(ctx.bodyAsClass(Transaction.class)).thenReturn(transaction);
     doThrow(new BadRequestException("Not enough money on the balance"))
+        .when(transactionService).perform(transaction);
+
+    transactionController.perform(ctx);
+  }
+
+  @Test(expected = BadRequestException.class)
+  public void POST_to_perform_transaction_throwsBadRequest_duplicate_accounts() {
+    Transaction transaction = new Transaction(1L, 1L, 1);
+    when(ctx.bodyAsClass(Transaction.class)).thenReturn(transaction);
+    doThrow(new BadRequestException("Accounts from and to must be different"))
+        .when(transactionService).perform(transaction);
+
+    transactionController.perform(ctx);
+  }
+
+  @Test(expected = BadRequestException.class)
+  public void POST_to_perform_transaction_throwsBadRequest_amount_lessThen_One() {
+    Transaction transaction = new Transaction(1L, 2L, -1);
+    when(ctx.bodyAsClass(Transaction.class)).thenReturn(transaction);
+    doThrow(new BadRequestException("Amount for transaction must be greater than 0"))
         .when(transactionService).perform(transaction);
 
     transactionController.perform(ctx);

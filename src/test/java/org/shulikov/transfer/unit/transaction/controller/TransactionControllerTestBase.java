@@ -1,4 +1,4 @@
-package org.shulikov.transfer.unit.transaction;
+package org.shulikov.transfer.unit.transaction.controller;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -10,10 +10,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.shulikov.transfer.controller.TransactionController;
-import org.shulikov.transfer.model.Transaction;
 import org.shulikov.transfer.service.api.TransactionService;
+import org.shulikov.transfer.unit.transaction.TransactionTestBase;
 
-public abstract class TransactionControllerTestBase {
+public abstract class TransactionControllerTestBase extends TransactionTestBase {
 
   @InjectMocks
   protected TransactionController transactionController;
@@ -32,9 +32,5 @@ public abstract class TransactionControllerTestBase {
   public void resetMocks() {
     reset(transactionService);
     reset(ctx);
-  }
-
-  protected Transaction createTransaction() {
-    return new Transaction(1L, 2L, 5);
   }
 }
