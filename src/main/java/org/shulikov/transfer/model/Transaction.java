@@ -6,6 +6,15 @@ public class Transaction {
   private Long to;
   private int amount;
 
+  public Transaction() {
+  }
+
+  public Transaction(Long from, Long to, int amount) {
+    this.from = from;
+    this.to = to;
+    this.amount = amount;
+  }
+
   public Long getFrom() {
     return from;
   }
