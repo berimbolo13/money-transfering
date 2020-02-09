@@ -1,4 +1,4 @@
-package org.shulikov.transfer.unit.account;
+package org.shulikov.transfer.unit.account.controller;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -10,10 +10,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.shulikov.transfer.controller.AccountController;
-import org.shulikov.transfer.model.Account;
 import org.shulikov.transfer.service.api.AccountService;
+import org.shulikov.transfer.unit.account.AccountTestBase;
 
-public abstract class AccountControllerTestBase {
+public abstract class AccountControllerTestBase extends AccountTestBase {
 
   protected final String HOLDER_NAME_FIELD = "holderName";
 
@@ -36,7 +36,4 @@ public abstract class AccountControllerTestBase {
     reset(ctx);
   }
 
-  protected Account createAccount() {
-    return new Account(1L, "Roland", 0);
-  }
 }

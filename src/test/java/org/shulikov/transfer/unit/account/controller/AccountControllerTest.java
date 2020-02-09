@@ -1,4 +1,4 @@
-package org.shulikov.transfer.unit.account;
+package org.shulikov.transfer.unit.account.controller;
 
 import static org.eclipse.jetty.http.HttpStatus.CREATED_201;
 import static org.eclipse.jetty.http.HttpStatus.NO_CONTENT_204;
