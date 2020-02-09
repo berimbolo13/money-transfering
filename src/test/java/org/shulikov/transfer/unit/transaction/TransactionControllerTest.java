@@ -1,4 +1,4 @@
-package transaction;
+package org.shulikov.transfer.unit.transaction;
 
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.mockito.Mockito.doThrow;

@@ -1,4 +1,4 @@
-package transaction;
+package org.shulikov.transfer.unit.transaction;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
