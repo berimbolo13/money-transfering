@@ -1,7 +1,9 @@
 package org.shulikov.transfer.controller;
 
 import static java.lang.Long.parseLong;
+import static org.eclipse.jetty.http.HttpStatus.CREATED_201;
 import static org.eclipse.jetty.http.HttpStatus.NO_CONTENT_204;
+import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.shulikov.transfer.util.HttpRequestUtil.getRequiredQueryParam;
 
 import com.google.inject.Inject;
@@ -38,7 +40,7 @@ public class AccountController implements CrudHandler {
               description = "The holder's name for the new account")},
       responses = {
           @OpenApiResponse(
-              status = "200",
+              status = "201",
               content = {@OpenApiContent(from = Account.class)},
               description = "Successfully created"),
           @OpenApiResponse(
@@ -48,6 +50,7 @@ public class AccountController implements CrudHandler {
   )
   public void create(@NotNull Context context) {
     context.json(accountService.create(getRequiredQueryParam(context, "holderName")));
+    context.status(CREATED_201);
   }
 
   @OpenApi(
@@ -84,6 +87,7 @@ public class AccountController implements CrudHandler {
   @Override
   public void getAll(@NotNull Context context) {
     context.json(accountService.findAll());
+    context.status(OK_200);
   }
 
   @Override
@@ -104,6 +108,7 @@ public class AccountController implements CrudHandler {
   )
   public void getOne(@NotNull Context context, @NotNull String id) {
     context.json(accountService.getById(parseLong(id)));
+    context.status(OK_200);
   }
 
   @OpenApi(
@@ -132,5 +137,6 @@ public class AccountController implements CrudHandler {
   public void update(@NotNull Context context, @NotNull String id) {
     String newHolderName = getRequiredQueryParam(context, "holderName");
     context.json(accountService.update(parseLong(id), newHolderName));
+    context.status(OK_200);
   }
 }
