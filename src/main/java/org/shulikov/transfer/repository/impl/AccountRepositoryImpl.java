@@ -16,9 +16,9 @@ import org.shulikov.transfer.validator.api.AccountValidator;
 public class AccountRepositoryImpl implements AccountRepository {
 
   private Map<Long, Account> accounts = new ConcurrentHashMap<>() {{
-    put(1L, new Account(1L, "First Holder", 76));
-    put(2L, new Account(2L, "Second Holder", 76));
-    put(3L, new Account(3L, "Third Holder", 76));
+    put(1L, new Account(1L, "First Holder", 100));
+    put(2L, new Account(2L, "Second Holder", 100));
+    put(3L, new Account(3L, "Third Holder", 100));
   }};
 
   private AtomicLong lastId = new AtomicLong(accounts.size());
@@ -50,6 +50,7 @@ public class AccountRepositoryImpl implements AccountRepository {
 
   public void transferMoney(Long fromId, Long toId, int amount) {
     accounts.compute(fromId, (key, value) -> {
+      simulateTransactionDuration();
       accountValidator.validateForWithdraw(key, value, amount);
       depositMoney(toId, amount);
       value.setBalance(value.getBalance() - amount);
@@ -63,5 +64,12 @@ public class AccountRepositoryImpl implements AccountRepository {
       value.setBalance(value.getBalance() + amount);
       return value;
     });
+  }
+
+  private void simulateTransactionDuration() {
+    try {
+      Thread.sleep(2000);
+    } catch (InterruptedException ignored) {
+    }
   }
 }

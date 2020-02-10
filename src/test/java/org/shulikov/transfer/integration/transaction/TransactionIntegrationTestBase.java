@@ -4,6 +4,7 @@ import static kong.unirest.Unirest.get;
 import static kong.unirest.Unirest.post;
 
 import io.javalin.plugin.json.JavalinJson;
+import java.util.concurrent.CompletableFuture;
 import kong.unirest.HttpResponse;
 import org.shulikov.transfer.integration.IntegrationTestBase;
 import org.shulikov.transfer.model.Account;
@@ -19,6 +20,10 @@ public abstract class TransactionIntegrationTestBase extends IntegrationTestBase
 
   protected HttpResponse<String> performTransaction(Transaction transaction) {
     return post(API_TRANSACTIONS).body(JavalinJson.toJson(transaction)).asString();
+  }
+
+  protected CompletableFuture<HttpResponse<String>> performTransactionAsync(Transaction transaction) {
+    return post(API_TRANSACTIONS).body(JavalinJson.toJson(transaction)).asStringAsync();
   }
 
   protected int getAccountBalance(Long id) {

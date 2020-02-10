@@ -5,6 +5,8 @@ import static org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
 import static org.eclipse.jetty.http.HttpStatus.NOT_FOUND_404;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import kong.unirest.HttpResponse;
 import org.junit.Test;
 import org.shulikov.transfer.model.Account;
@@ -95,5 +97,28 @@ public class TransactionIntegrationTest extends TransactionIntegrationTestBase {
     assertThat(response.getBody()).isEqualTo(INVALID_BALANCE);
     assertThat(getAccountBalance(from.getId())).isEqualTo(from.getBalance());
     assertThat(getAccountBalance(to.getId())).isEqualTo(to.getBalance());
+  }
+
+  /**
+   * This test demonstrates locking for accounts while transactions:
+   *
+   * First - the only one transaction will be successful.
+   *
+   * Second - you can see a time of the test execution which is two times more than single
+   * transaction duration despite of async (concurrent) requests
+   * It means that a server thread for the second transaction waits the end of the first
+   */
+  @Test
+  public void perform_two_valid_transaction_returns200_onlyForOne()
+      throws ExecutionException, InterruptedException {
+    Account from = createAccount();
+    Account to = createAccount();
+    int amount = 100;
+    Transaction transaction = new Transaction(from.getId(), to.getId(), amount);
+
+    CompletableFuture<HttpResponse<String>> first = performTransactionAsync(transaction);
+    CompletableFuture<HttpResponse<String>> second = performTransactionAsync(transaction);
+
+    assertThat(first.get().getStatus()).isNotEqualTo(second.get().getStatus());
   }
 }
