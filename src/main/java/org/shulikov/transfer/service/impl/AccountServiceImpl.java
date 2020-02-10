@@ -32,7 +32,7 @@ public class AccountServiceImpl implements AccountService {
 
   @Override
   public Account create(String holderName) {
-    return accountRepository.create(new Account(holderName, 0));
+    return accountRepository.create(new Account(holderName, 100));
   }
 
   @Override
