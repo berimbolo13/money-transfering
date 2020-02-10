@@ -15,8 +15,6 @@ public class Starter {
 
   private ExceptionHandler exceptionHandler;
 
-  private Javalin app;
-
   @Inject
   public Starter(Router router, ExceptionHandler exceptionHandler) {
     this.router = router;
@@ -24,14 +22,10 @@ public class Starter {
   }
 
   public void boot() {
-    app = Javalin
+    Javalin app = Javalin
         .create(config -> config.registerPlugin(getConfiguredOpenApiPlugin()))
         .start(SERVICE_PORT);
     router.bindRoutes(app);
     exceptionHandler.bindExceptions(app);
-  }
-
-  public void stop() {
-    app.stop();
   }
 }

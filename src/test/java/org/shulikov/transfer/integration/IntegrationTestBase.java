@@ -7,8 +7,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.jetty.http.HttpStatus.CREATED_201;
 import static org.shulikov.transfer.config.Starter.SERVICE_PORT;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import kong.unirest.HttpResponse;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.shulikov.transfer.config.AppModule;
 import org.shulikov.transfer.config.Starter;
@@ -16,7 +16,9 @@ import org.shulikov.transfer.model.Account;
 
 public abstract class IntegrationTestBase {
 
-  protected static Starter starter = createInjector(new AppModule()).getInstance(Starter.class);
+  private static Starter starter = createInjector(new AppModule()).getInstance(Starter.class);
+
+  private static AtomicBoolean serverIsStarted = new AtomicBoolean(false);
 
   protected final String SERVER_ADDRESS = "http://localhost:" + SERVICE_PORT;
 
@@ -33,14 +35,11 @@ public abstract class IntegrationTestBase {
   protected final String ACCOUNT_NOT_FOUND = format("\"Account with id %s was not found\"", NON_EXISTED_ID);
 
   @BeforeClass
-  public static void startApp() throws InterruptedException {
-    Thread.sleep(3000);
-    starter.boot();
-  }
-
-  @AfterClass
-  public static void shutdown() {
-    starter.stop();
+  public static void startApp() {
+    if (!serverIsStarted.get()) {
+      starter.boot();
+      serverIsStarted.set(true);
+    }
   }
 
   protected Account createAccount() {
