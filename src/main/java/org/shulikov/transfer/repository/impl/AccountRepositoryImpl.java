@@ -50,7 +50,6 @@ public class AccountRepositoryImpl implements AccountRepository {
 
   public void transferMoney(Long fromId, Long toId, int amount) {
     accounts.compute(fromId, (key, value) -> {
-      simulateTransactionDuration();
       accountValidator.validateForWithdraw(key, value, amount);
       depositMoney(toId, amount);
       value.setBalance(value.getBalance() - amount);
@@ -64,12 +63,5 @@ public class AccountRepositoryImpl implements AccountRepository {
       value.setBalance(value.getBalance() + amount);
       return value;
     });
-  }
-
-  private void simulateTransactionDuration() {
-    try {
-      Thread.sleep(2000);
-    } catch (InterruptedException ignored) {
-    }
   }
 }

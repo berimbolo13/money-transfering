@@ -2,12 +2,14 @@ package org.shulikov.transfer.service.impl;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import lombok.extern.slf4j.Slf4j;
 import org.shulikov.transfer.model.Transaction;
 import org.shulikov.transfer.repository.api.AccountRepository;
 import org.shulikov.transfer.service.api.TransactionService;
 import org.shulikov.transfer.validator.api.TransactionValidator;
 
 @Singleton
+@Slf4j
 public class TransactionServiceImpl implements TransactionService {
 
   private AccountRepository accountRepository;
@@ -28,5 +30,8 @@ public class TransactionServiceImpl implements TransactionService {
     transactionValidator.validateTransaction(transaction);
     accountRepository
         .transferMoney(transaction.getFrom(), transaction.getTo(), transaction.getAmount());
+    log.info(
+        "{} coin(s) were successfully transferred from account with id {} to account with id {}",
+        transaction.getAmount(), transaction.getFrom(), transaction.getTo());
   }
 }
