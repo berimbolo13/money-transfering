@@ -9,7 +9,7 @@ The datastore was implemented in-memory as required.
 ConcurrentHashMap helps to avoid map destruction while multithread working. AtomicLong is used for id generation.
 
 To avoid race conditions while money transfering I used `ConcurrentHashMap#compute` method which blocks entries.
-It's tested in `perform_two_valid_transaction_returns200_onlyForOne`
+It's tested in `perform_two_valid_transaction_returns200_onlyForOne` (`Thread.sleep()` was added to the transaction logic to simulate duration)
 
 The code is divided into layers (controllers, services, validators, repositories) which are carefully covered by unit tests.
 
