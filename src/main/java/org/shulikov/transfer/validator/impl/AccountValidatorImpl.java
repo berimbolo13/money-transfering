@@ -1,5 +1,6 @@
 package org.shulikov.transfer.validator.impl;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.shulikov.transfer.exception.BadRequestException;
 import org.shulikov.transfer.exception.ResourceNotFoundException;
 import org.shulikov.transfer.model.Account;
@@ -22,8 +23,8 @@ public class AccountValidatorImpl implements AccountValidator {
     }
   }
 
-  private void checkIfEnoughOnBalance(int balance, int amount) {
-    if (balance < amount) {
+  private void checkIfEnoughOnBalance(AtomicInteger balance, int amount) {
+    if (balance.get() < amount) {
       throw new BadRequestException("Not enough money on the balance");
     }
   }

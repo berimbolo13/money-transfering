@@ -7,6 +7,7 @@ import com.google.inject.Singleton;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import org.shulikov.transfer.model.Account;
 import org.shulikov.transfer.repository.api.AccountRepository;
@@ -15,10 +16,12 @@ import org.shulikov.transfer.validator.api.AccountValidator;
 @Singleton
 public class AccountRepositoryImpl implements AccountRepository {
 
+  private static long TRANSACTION_DURATION = 2 * 1000;
+
   private Map<Long, Account> accounts = new ConcurrentHashMap<>() {{
-    put(1L, new Account(1L, "First Holder", 100));
-    put(2L, new Account(2L, "Second Holder", 100));
-    put(3L, new Account(3L, "Third Holder", 100));
+    put(1L, new Account(1L, "First Holder", new AtomicInteger(100)));
+    put(2L, new Account(2L, "Second Holder", new AtomicInteger(100)));
+    put(3L, new Account(3L, "Third Holder", new AtomicInteger(100)));
   }};
 
   private AtomicLong lastId = new AtomicLong(accounts.size());
@@ -51,17 +54,23 @@ public class AccountRepositoryImpl implements AccountRepository {
   public void transferMoney(Long fromId, Long toId, int amount) {
     accounts.compute(fromId, (key, value) -> {
       accountValidator.validateForWithdraw(key, value, amount);
+      simulateTransactionDuration();
       depositMoney(toId, amount);
-      value.setBalance(value.getBalance() - amount);
+      value.getBalance().addAndGet(-amount);
       return value;
     });
   }
 
   private void depositMoney(Long toId, int amount) {
-    accounts.compute(toId, (key, value) -> {
-      accountValidator.validateForDeposit(key, value);
-      value.setBalance(value.getBalance() + amount);
-      return value;
-    });
+    Account account = accounts.get(toId);
+    accountValidator.validateForDeposit(toId, account);
+    account.getBalance().addAndGet(amount);
+  }
+
+  private void simulateTransactionDuration() {
+    try {
+      Thread.sleep(TRANSACTION_DURATION);
+    } catch (InterruptedException ignored) {
+    }
   }
 }

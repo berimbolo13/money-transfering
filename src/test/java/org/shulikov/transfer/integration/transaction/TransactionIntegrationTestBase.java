@@ -5,6 +5,7 @@ import static kong.unirest.Unirest.post;
 
 import io.javalin.plugin.json.JavalinJson;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 import kong.unirest.HttpResponse;
 import org.shulikov.transfer.integration.IntegrationTestBase;
 import org.shulikov.transfer.model.Account;
@@ -26,7 +27,7 @@ public abstract class TransactionIntegrationTestBase extends IntegrationTestBase
     return post(API_TRANSACTIONS).body(JavalinJson.toJson(transaction)).asStringAsync();
   }
 
-  protected int getAccountBalance(Long id) {
+  protected AtomicInteger getAccountBalance(Long id) {
     return get(buildAccountUri(id)).asObject(Account.class).getBody().getBalance();
   }
 }

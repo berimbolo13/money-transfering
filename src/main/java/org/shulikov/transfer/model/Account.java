@@ -1,21 +1,23 @@
 package org.shulikov.transfer.model;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class Account {
 
   private Long id;
   private String holderName;
-  private int balance;
+  private AtomicInteger balance;
 
 
   public Account() {
   }
 
-  public Account(String holderName, int balance) {
+  public Account(String holderName, AtomicInteger balance) {
     this.holderName = holderName;
     this.balance = balance;
   }
 
-  public Account(Long id, String holderName, int balance) {
+  public Account(Long id, String holderName, AtomicInteger balance) {
     this.id = id;
     this.holderName = holderName;
     this.balance = balance;
@@ -37,11 +39,11 @@ public class Account {
     this.holderName = holderName;
   }
 
-  public int getBalance() {
+  public AtomicInteger getBalance() {
     return balance;
   }
 
-  public void setBalance(int balance) {
+  public void setBalance(AtomicInteger balance) {
     this.balance = balance;
   }
 }

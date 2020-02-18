@@ -23,8 +23,8 @@ public class TransactionIntegrationTest extends TransactionIntegrationTestBase {
     HttpResponse<String> response = performTransaction(transaction);
 
     assertThat(response.getStatus()).isEqualTo(OK_200);
-    assertThat(getAccountBalance(from.getId())).isEqualTo(from.getBalance() - amount);
-    assertThat(getAccountBalance(to.getId())).isEqualTo(to.getBalance() + amount);
+    assertThat(getAccountBalance(from.getId()).get()).isEqualTo(from.getBalance().get() - amount);
+    assertThat(getAccountBalance(to.getId()).get()).isEqualTo(to.getBalance().get() + amount);
   }
 
   @Test
@@ -35,7 +35,7 @@ public class TransactionIntegrationTest extends TransactionIntegrationTestBase {
 
     assertThat(response.getStatus()).isEqualTo(BAD_REQUEST_400);
     assertThat(response.getBody()).isEqualTo(DUPLICATE_ACCOUNTS);
-    assertThat(getAccountBalance(from.getId())).isEqualTo(from.getBalance());
+    assertThat(getAccountBalance(from.getId()).get()).isEqualTo(from.getBalance().get());
   }
 
   @Test
@@ -47,8 +47,8 @@ public class TransactionIntegrationTest extends TransactionIntegrationTestBase {
 
     assertThat(response.getStatus()).isEqualTo(BAD_REQUEST_400);
     assertThat(response.getBody()).isEqualTo(INVALID_AMOUNT);
-    assertThat(getAccountBalance(from.getId())).isEqualTo(from.getBalance());
-    assertThat(getAccountBalance(to.getId())).isEqualTo(to.getBalance());
+    assertThat(getAccountBalance(from.getId()).get()).isEqualTo(from.getBalance().get());
+    assertThat(getAccountBalance(to.getId()).get()).isEqualTo(to.getBalance().get());
   }
 
   @Test
@@ -60,8 +60,8 @@ public class TransactionIntegrationTest extends TransactionIntegrationTestBase {
 
     assertThat(response.getStatus()).isEqualTo(BAD_REQUEST_400);
     assertThat(response.getBody()).isEqualTo(INVALID_AMOUNT);
-    assertThat(getAccountBalance(from.getId())).isEqualTo(from.getBalance());
-    assertThat(getAccountBalance(to.getId())).isEqualTo(to.getBalance());
+    assertThat(getAccountBalance(from.getId()).get()).isEqualTo(from.getBalance().get());
+    assertThat(getAccountBalance(to.getId()).get()).isEqualTo(to.getBalance().get());
   }
 
   @Test
@@ -72,7 +72,7 @@ public class TransactionIntegrationTest extends TransactionIntegrationTestBase {
 
     assertThat(response.getStatus()).isEqualTo(NOT_FOUND_404);
     assertThat(response.getBody()).isEqualTo(ACCOUNT_NOT_FOUND);
-    assertThat(getAccountBalance(to.getId())).isEqualTo(to.getBalance());
+    assertThat(getAccountBalance(to.getId()).get()).isEqualTo(to.getBalance().get());
   }
 
   @Test
@@ -83,7 +83,7 @@ public class TransactionIntegrationTest extends TransactionIntegrationTestBase {
 
     assertThat(response.getStatus()).isEqualTo(NOT_FOUND_404);
     assertThat(response.getBody()).isEqualTo(ACCOUNT_NOT_FOUND);
-    assertThat(getAccountBalance(from.getId())).isEqualTo(from.getBalance());
+    assertThat(getAccountBalance(from.getId()).get()).isEqualTo(from.getBalance().get());
   }
 
   @Test
@@ -95,8 +95,8 @@ public class TransactionIntegrationTest extends TransactionIntegrationTestBase {
 
     assertThat(response.getStatus()).isEqualTo(BAD_REQUEST_400);
     assertThat(response.getBody()).isEqualTo(INVALID_BALANCE);
-    assertThat(getAccountBalance(from.getId())).isEqualTo(from.getBalance());
-    assertThat(getAccountBalance(to.getId())).isEqualTo(to.getBalance());
+    assertThat(getAccountBalance(from.getId()).get()).isEqualTo(from.getBalance().get());
+    assertThat(getAccountBalance(to.getId()).get()).isEqualTo(to.getBalance().get());
   }
 
   /**
@@ -120,5 +120,21 @@ public class TransactionIntegrationTest extends TransactionIntegrationTestBase {
     CompletableFuture<HttpResponse<String>> second = performTransactionAsync(transaction);
 
     assertThat(first.get().getStatus()).isNotEqualTo(second.get().getStatus());
+  }
+
+  @Test
+  public void perform_two_mutual_valid_transactions_withoutDeadlock()
+      throws ExecutionException, InterruptedException {
+
+    Account from = createAccount();
+    Account to = createAccount();
+    int amount = 100;
+    Transaction transaction = new Transaction(from.getId(), to.getId(), amount);
+    Transaction transaction2 = new Transaction(to.getId(), from.getId(), amount);
+
+    CompletableFuture<HttpResponse<String>> first = performTransactionAsync(transaction);
+    CompletableFuture<HttpResponse<String>> second = performTransactionAsync(transaction2);
+
+    assertThat(first.get().getStatus()).isEqualTo(second.get().getStatus());
   }
 }

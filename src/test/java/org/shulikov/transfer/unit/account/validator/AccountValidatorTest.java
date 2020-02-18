@@ -1,5 +1,6 @@
 package org.shulikov.transfer.unit.account.validator;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 import org.shulikov.transfer.exception.BadRequestException;
 import org.shulikov.transfer.exception.ResourceNotFoundException;
@@ -9,7 +10,7 @@ public class AccountValidatorTest extends AccountValidatorTestBase {
 
   @Test
   public void validate_beforeWithdraw_accountExisted_withValidBalance() {
-    Account account = new Account(1L, "holderName", 5);
+    Account account = new Account(1L, "holderName", new AtomicInteger(5));
     accountValidator.validateForWithdraw(account.getId(), account, 2);
   }
 
@@ -20,7 +21,7 @@ public class AccountValidatorTest extends AccountValidatorTestBase {
 
   @Test(expected = BadRequestException.class)
   public void validate_beforeWithdraw_accountExisted_withInvalidBalance() {
-    Account account = new Account(1L, "holderName", 5);
+    Account account = new Account(1L, "holderName", new AtomicInteger(5));
     accountValidator.validateForWithdraw(account.getId(), account, 10);
   }
 

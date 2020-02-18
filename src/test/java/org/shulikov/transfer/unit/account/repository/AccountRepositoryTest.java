@@ -3,6 +3,7 @@ package org.shulikov.transfer.unit.account.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 import org.shulikov.transfer.model.Account;
 
@@ -10,9 +11,9 @@ public class AccountRepositoryTest extends AccountRepositoryTestBase {
 
   @Test
   public void createAccount_check_idIncrementation() {
-    Account first = accountRepository.create(new Account("First", 0));
-    Account second = accountRepository.create(new Account("Second", 0));
-    Account third = accountRepository.create(new Account("Third", 0));
+    Account first = accountRepository.create(new Account("First", new AtomicInteger()));
+    Account second = accountRepository.create(new Account("Second", new AtomicInteger()));
+    Account third = accountRepository.create(new Account("Third", new AtomicInteger()));
 
     assertThat(second.getId()).isEqualTo(first.getId() + 1);
     assertThat(third.getId()).isEqualTo(second.getId() + 1);
@@ -20,7 +21,7 @@ public class AccountRepositoryTest extends AccountRepositoryTestBase {
 
   @Test
   public void getAccount_byId_whichIsExisted_returnsOptionalAccount() {
-    Account account = accountRepository.create(new Account("holderName", 0));
+    Account account = accountRepository.create(new Account("holderName", new AtomicInteger()));
     Optional<Account> byId = accountRepository.findById(account.getId());
 
     assertThat(byId).isPresent();
@@ -35,7 +36,7 @@ public class AccountRepositoryTest extends AccountRepositoryTestBase {
 
   @Test
   public void getAllAccounts_returnsAccountList() {
-    accountRepository.create(new Account("holderName", 0));
+    accountRepository.create(new Account("holderName", new AtomicInteger()));
     Iterable<Account> all = accountRepository.findAll();
 
     assertThat(all).size().isGreaterThan(0);
@@ -43,7 +44,7 @@ public class AccountRepositoryTest extends AccountRepositoryTestBase {
 
   @Test
   public void deleteAccount_whichIsExisted() {
-    Account account = accountRepository.create(new Account("holderName", 0));
+    Account account = accountRepository.create(new Account("holderName", new AtomicInteger()));
     accountRepository.delete(account.getId());
 
     Optional<Account> byId = accountRepository.findById(account.getId());
@@ -52,12 +53,12 @@ public class AccountRepositoryTest extends AccountRepositoryTestBase {
 
   @Test
   public void transferMoney_fromTo_balancesAreChanged() {
-    Account from = accountRepository.create(new Account("from", 10));
-    Account to = accountRepository.create(new Account("to", 0));
+    Account from = accountRepository.create(new Account("from", new AtomicInteger(10)));
+    Account to = accountRepository.create(new Account("to", new AtomicInteger()));
 
     accountRepository.transferMoney(from.getId(), to.getId(), 10);
 
-    assertThat(from.getBalance()).isEqualTo(0);
-    assertThat(to.getBalance()).isEqualTo(10);
+    assertThat(from.getBalance().get()).isEqualTo(0);
+    assertThat(to.getBalance().get()).isEqualTo(10);
   }
 }

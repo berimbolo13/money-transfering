@@ -4,6 +4,7 @@ import static java.util.Optional.ofNullable;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.extern.slf4j.Slf4j;
 import org.shulikov.transfer.exception.ResourceNotFoundException;
 import org.shulikov.transfer.model.Account;
@@ -36,7 +37,7 @@ public class AccountServiceImpl implements AccountService {
 
   @Override
   public Account create(String holderName) {
-    Account account = accountRepository.create(new Account(holderName, 100));
+    Account account = accountRepository.create(new Account(holderName, new AtomicInteger(100)));
     log.info("Account with id {} was created", account.getId());
     return account;
   }
